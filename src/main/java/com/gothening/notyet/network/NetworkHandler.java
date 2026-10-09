@@ -8,7 +8,10 @@ public final class NetworkHandler {
     }
 
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
-        event.registrar("1")
-                .playToServer(EatRequestPayload.TYPE, EatRequestPayload.STREAM_CODEC, EatRequestPayloadHandler::handle);
+        event.registrar("2")
+                .playToServer(EatRequestPayload.TYPE, EatRequestPayload.STREAM_CODEC, EatRequestPayloadHandler::handle)
+                .playToServer(BlacklistRequestPayload.TYPE, BlacklistRequestPayload.STREAM_CODEC, BlacklistRequestPayloadHandler::handle)
+                .playToServer(BlacklistUpdatePayload.TYPE, BlacklistUpdatePayload.STREAM_CODEC, BlacklistUpdatePayloadHandler::handle)
+                .playToClient(BlacklistSyncPayload.TYPE, BlacklistSyncPayload.STREAM_CODEC, BlacklistSyncPayloadHandler::handle);
     }
 }

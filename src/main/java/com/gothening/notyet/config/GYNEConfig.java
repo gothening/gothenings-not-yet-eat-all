@@ -1,8 +1,6 @@
 package com.gothening.notyet.config;
 
 import java.util.List;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -42,9 +40,8 @@ public final class GYNEConfig {
     private GYNEConfig() {
     }
 
-    public static boolean isFoodBlacklisted(ItemStack stack) {
-        String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-        return FOOD_BLACKLIST.get().contains(id);
+    public static boolean isFoodBlacklisted(String itemId) {
+        return FOOD_BLACKLIST.get().contains(itemId);
     }
 
     private static final class Values {

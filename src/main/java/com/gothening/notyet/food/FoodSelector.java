@@ -1,5 +1,7 @@
 package com.gothening.notyet.food;
 
+import com.gothening.notyet.blacklist.FoodBlacklistRules;
+import com.gothening.notyet.blacklist.PersonalFoodBlacklistData;
 import com.gothening.notyet.config.GYNEConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +20,11 @@ public final class FoodSelector {
         return foodProperties != null
                 && !stack.useOnRelease()
                 && stack.isItemEnabled(player.level().enabledFeatures())
-                && !GYNEConfig.isFoodBlacklisted(stack);
+                && !FoodBlacklistRules.isExcluded(
+                        GYNEConfig.FOOD_BLACKLIST.get(),
+                        PersonalFoodBlacklistData.get(player),
+                        player.getUUID(),
+                        itemId(stack));
     }
 
     public static boolean canEat(ServerPlayer player, ItemStack stack) {

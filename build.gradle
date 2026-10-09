@@ -1,3 +1,7 @@
+import java.nio.charset.StandardCharsets
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -15,6 +19,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 repositories {
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
@@ -24,6 +29,56 @@ dependencies {
     compileOnly files('libs/sophisticatedbackpacks-1.21.1-3.25.73.2027.jar')
     compileOnly files('libs/sophisticatedcore-1.21.1-1.4.84.2248.jar')
     compileOnly files('libs/sophisticatedstorage-1.21.1-1.5.85.2077.jar')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+def isAsciiPath = { File file -> file.absolutePath.chars().allMatch { int character -> character < 128 } }
+
+def writePathingJar = { File jarFile, Collection<File> entries ->
+    String classPathValue = entries.collect { File entry ->
+        URI uri = entry.toURI()
+        String value = uri.toASCIIString()
+        entry.isDirectory() && !value.endsWith('/') ? value + '/' : value
+    }.join(' ')
+
+    List<String> lines = []
+    String remaining = classPathValue.isEmpty() ? '' : 'Class-Path: ' + classPathValue
+    boolean first = true
+    while (!remaining.isEmpty()) {
+        int limit = first ? 72 : 71
+        int take = Math.min(limit, remaining.length())
+        lines << (first ? remaining.substring(0, take) : ' ' + remaining.substring(0, take))
+        remaining = remaining.substring(take)
+        first = false
+    }
+    StringBuilder manifest = new StringBuilder('Manifest-Version: 1.0\r\n')
+    lines.each { manifest.append(it).append('\r\n') }
+    manifest.append('\r\n')
+
+    jarFile.parentFile?.mkdirs()
+    new ZipOutputStream(new FileOutputStream(jarFile)).withCloseable { ZipOutputStream zip ->
+        zip.putNextEntry(new ZipEntry('META-INF/MANIFEST.MF'))
+        zip.write(manifest.toString().getBytes(StandardCharsets.UTF_8))
+        zip.closeEntry()
+    }
+}
+
+// Gradle writes the test worker classpath to an @argfile using the JVM default charset, while the
+// java launcher reads that file with the OS native charset. On Windows with a non-ASCII project
+// path (e.g. a Chinese folder) the two encodings disagree and every test class fails to load.
+// Routing the non-ASCII entries through a wrapper jar in the (ASCII) temp directory keeps the
+// argfile readable for the launcher without changing anything on ASCII-only project paths.
+def testPathingJarFile = new File(System.getProperty('java.io.tmpdir'), "${mod_id}-test-classpath.jar")
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
+
+    def realClasspath = sourceSets.test.runtimeClasspath
+    def pathingEntries = providers.provider { realClasspath.files.findAll { !isAsciiPath(it) } }
+    classpath = files(providers.provider { realClasspath.files.findAll(isAsciiPath) }) + files(testPathingJarFile)
+    doFirst {
+        writePathingJar(testPathingJarFile, pathingEntries.get())
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {

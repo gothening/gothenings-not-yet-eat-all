@@ -1,0 +1,10 @@
+{
+  "key.categories.gothenings_not_yet_eat_all": "Gothening的一键进食",
+  "key.gothenings_not_yet_eat_all.eat_all": "从可访问的存储中进食（按住 Shift 打开食物黑名单）",
+  "gui.gothenings_not_yet_eat_all.blacklist.title": "食物黑名单",
+  "gui.gothenings_not_yet_eat_all.blacklist.page": "第 %s / %s 页",
+  "gui.gothenings_not_yet_eat_all.blacklist.previous_page": "上一页",
+  "gui.gothenings_not_yet_eat_all.blacklist.next_page": "下一页",
+  "gui.gothenings_not_yet_eat_all.blacklist.globally_disabled": "已被服务器全局黑名单禁用",
+  "gui.gothenings_not_yet_eat_all.blacklist.unknown_item": "未知物品（对应模组可能已卸载）"
+}

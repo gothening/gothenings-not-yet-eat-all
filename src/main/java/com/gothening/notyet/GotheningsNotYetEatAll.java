@@ -1,5 +1,6 @@
 package com.gothening.notyet;
 
+import com.gothening.notyet.blacklist.PersonalFoodBlacklistService;
 import com.gothening.notyet.network.NetworkHandler;
 import com.gothening.notyet.client.ClientEvents;
 import com.gothening.notyet.client.ClientModEvents;
@@ -22,9 +23,11 @@ public class GotheningsNotYetEatAll {
     public GotheningsNotYetEatAll(IEventBus modEventBus) {
         ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, GYNEConfig.SPEC);
         modEventBus.addListener(NetworkHandler::registerPayloads);
+        NeoForge.EVENT_BUS.addListener(PersonalFoodBlacklistService::onPlayerLoggedIn);
         if (FMLEnvironment.dist.isClient()) {
             modEventBus.addListener(ClientModEvents::registerKeyMappings);
             NeoForge.EVENT_BUS.addListener(ClientEvents::onClientTick);
+            NeoForge.EVENT_BUS.addListener(ClientEvents::onKeyInput);
         }
     }
 }

@@ -1,4 +1,10 @@
 {
   "key.categories.gothenings_not_yet_eat_all": "Gothening's not yet eat all",
-  "key.gothenings_not_yet_eat_all.eat_all": "Eat from accessible storage"
+  "key.gothenings_not_yet_eat_all.eat_all": "Eat from accessible storage (hold Shift to open the food blacklist)",
+  "gui.gothenings_not_yet_eat_all.blacklist.title": "Food Blacklist",
+  "gui.gothenings_not_yet_eat_all.blacklist.page": "Page %s / %s",
+  "gui.gothenings_not_yet_eat_all.blacklist.previous_page": "Previous page",
+  "gui.gothenings_not_yet_eat_all.blacklist.next_page": "Next page",
+  "gui.gothenings_not_yet_eat_all.blacklist.globally_disabled": "Disabled by the server global food blacklist",
+  "gui.gothenings_not_yet_eat_all.blacklist.unknown_item": "Unknown item (its mod may be missing)"
 }
